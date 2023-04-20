@@ -31,7 +31,7 @@ list<list<Edge*>> choosen_paths;
 
 int main()
 {
-    std::cout << "Creating graph and transforming it into a max flow graph!" << endl;
+    cout << "Creating graph and transforming it into a max flow graph!" << endl;
     //First we will establish a graph with weighted edges
     AddNode("A");
     AddNode("B");
@@ -58,6 +58,9 @@ int main()
 
 
     //Calculate the min-cut based on minimum edge sum
+    cout << "Using the maximal flow dual relationship with the min-cut problem we are able to use the maximal flow algorithm solution to help us find the best min-cut." << endl;
+    cout << "The min-cut solution consists of performing a cut on the following edges:" << endl;
+
     list<Edge*> limiting_edge = list<Edge*>();
     for (auto k = choosen_paths.begin(); k != choosen_paths.end(); k++) {
         list<Edge*> localList = *k;
@@ -65,37 +68,27 @@ int main()
         //Find the smallest capacity edge in the path
         Edge* local_limiting_edge = nullptr;
         for (auto i = localList.begin(); i != localList.end(); i++) {
-            cout << "DAIBNFS" << endl;
             Edge* local = *i;
-            cout << local->weight << endl;
 
             if (local_limiting_edge == nullptr) {
-                cout << "HI" << endl;
                 local_limiting_edge = local;
             }
             else {
-                cout << "OK" << endl;
                 if (local->weight < local_limiting_edge->weight) {
-                    cout << "eyes" << endl;
                     local_limiting_edge = local;
                 }
             }
         }
-        cout << "(" << local_limiting_edge->weight << "," << local_limiting_edge->weight << ")" << endl;
-        limiting_edge.push_back(local_limiting_edge);
-    }
-
-    cout << "The min-cut solution consists of performing a cut on the following edges:" << endl;
-    for (auto k = limiting_edge.begin(); k != limiting_edge.end(); k++) {
-        Edge* local = *k;
-        cout << "(" << local->beginning_node << "," << local->ending_node << ")" << endl;
+        if (local_limiting_edge != nullptr) {
+            cout << "(" << local_limiting_edge->beginning_node << "," << local_limiting_edge->ending_node << ")" << endl;
+        }
     }
 
     return 0;
 }
 
 int FindMaxFlow() {
-    std::cout << "Finding the max flow!" << endl;
+    cout << "Finding the max flow!" << endl;
 
     Node* source = nullptr;
     //Find the source node in memory
@@ -197,7 +190,7 @@ int FindMaxFlow() {
     }
     
     //Calculate max flow from all paths
-    std::cout << "Maximal Path(s):" << endl;
+    cout << "Maximal Path(s):" << endl;
     int max_flow = 0;
     for (auto k = choosen_paths.begin(); k != choosen_paths.end(); k++) {
         list<Edge*> localList = *k;
@@ -250,14 +243,14 @@ void AddNode(string name) {
 void PrintGraph() {
     for (auto i = graph.begin(); i != graph.end(); i++) {
         Node* value = *i;
-        std::cout << "{" << endl;
-        std::cout << "   Node: " << value->name << endl;
-        std::cout << "   Edges: " << endl;
+        cout << "{" << endl;
+        cout << "   Node: " << value->name << endl;
+        cout << "   Edges: " << endl;
         for (auto j = value->edges.begin(); j != value->edges.end(); j++) {
             Edge* edge_info = *j;
-            std::cout << "       { (" << edge_info->beginning_node << "," << edge_info->ending_node << ") with a weight of " << edge_info->weight << "}" << endl;
+            cout << "       { (" << edge_info->beginning_node << "," << edge_info->ending_node << ") with a weight of " << edge_info->weight << "}" << endl;
         }
-        std::cout << "}" << endl;
+        cout << "}" << endl;
     }
 }
 
