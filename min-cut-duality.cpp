@@ -27,6 +27,7 @@ void PrintGraph();
 
 //Instantiate Graph
 list<Node*> graph;
+list<list<Edge*>> choosen_paths;
 
 int main()
 {
@@ -53,8 +54,42 @@ int main()
 
     //Run max flow algorithm
     int max_flow = FindMaxFlow();
-
     cout << "MAX FLOW: " << max_flow << endl;
+
+
+    //Calculate the min-cut based on minimum edge sum
+    list<Edge*> limiting_edge = list<Edge*>();
+    for (auto k = choosen_paths.begin(); k != choosen_paths.end(); k++) {
+        list<Edge*> localList = *k;
+
+        //Find the smallest capacity edge in the path
+        Edge* local_limiting_edge = nullptr;
+        for (auto i = localList.begin(); i != localList.end(); i++) {
+            cout << "DAIBNFS" << endl;
+            Edge* local = *i;
+            cout << local->weight << endl;
+
+            if (local_limiting_edge == nullptr) {
+                cout << "HI" << endl;
+                local_limiting_edge = local;
+            }
+            else {
+                cout << "OK" << endl;
+                if (local->weight < local_limiting_edge->weight) {
+                    cout << "eyes" << endl;
+                    local_limiting_edge = local;
+                }
+            }
+        }
+        cout << "(" << local_limiting_edge->weight << "," << local_limiting_edge->weight << ")" << endl;
+        limiting_edge.push_back(local_limiting_edge);
+    }
+
+    cout << "The min-cut solution consists of performing a cut on the following edges:" << endl;
+    for (auto k = limiting_edge.begin(); k != limiting_edge.end(); k++) {
+        Edge* local = *k;
+        cout << "(" << local->beginning_node << "," << local->ending_node << ")" << endl;
+    }
 
     return 0;
 }
@@ -72,7 +107,9 @@ int FindMaxFlow() {
         }
     }
 
-    list<list<Edge*>> choosen_paths(source->edges.size(), list<Edge*>());
+    list<list<Edge*>> temp(source->edges.size(), list<Edge*>());
+    choosen_paths = temp;
+
     list<Edge*> takenEdges = list<Edge*>();
     Edge* max_capacity_edge = nullptr;
 
