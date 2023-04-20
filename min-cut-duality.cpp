@@ -22,6 +22,7 @@ struct Node {
 //Method Declarations
 void AddNode(string name);
 void AddEdge(string node, string ending_node, int weight);
+int FindMaxFlow();
 void PrintGraph();
 
 //Instantiate Graph
@@ -29,25 +30,111 @@ list<Node*> graph;
 
 int main()
 {
-    std::cout << "Hello World!\n";
-
-    //Establish graph nodes
-    AddNode("Source");
+    cout << "Creating graph and transforming it into a max flow graph!" << endl;
+    //First we will establish a graph with weighted edges
     AddNode("A");
     AddNode("B");
     AddNode("C");
     AddNode("D");
-    AddNode("Sink");
+    AddEdge("A", "B", 6);
+    AddEdge("A", "D", 1);
+    AddEdge("C", "B", 1);
+    AddEdge("C", "D", 6);
 
-    //Establish graph edges
-    AddEdge("Source", "A", 8);
-    AddEdge("Source", "B", 8);
-    AddEdge("A", "C", 3);
-    AddEdge("B", "D", 5);
+    //Lets now transform the graph into a max flow graph
+    AddNode("Source");
+    AddNode("Sink");
     AddEdge("C", "Sink", 5);
-    AddEdge("D", "Sink", 4);
+    AddEdge("D", "Sink", 5);
+    AddEdge("Source", "A", 20);
+    AddEdge("Source", "B", 20);
+
+    //PrintGraph();
+
+    int max_flow = FindMaxFlow();
+
+
+    return 0;
+}
+
+int FindMaxFlow() {
+    cout << "Finding the max flow!" << endl;
+
+    list<string> current_path = list<string>();
+
+    //Path finding logic
+    Node* current_node = nullptr;
+
+    //Find the source node in memory
+    for (auto i = graph.begin(); i != graph.end(); i++) {
+        Node* local = *i;
+        if (local->name == "Source") {
+            current_node = local;
+            current_path.push_back("Source");
+            break;
+        }
+    }
     
-    PrintGraph();
+    while (current_node->name != "Sink") {
+        //Find what edges the current node is connected to
+        list<Edge*> savedEdges = list<Edge*>();
+        for (auto i = graph.begin(); i != graph.end(); i++) {
+            Node* local = *i;
+
+            //Find what edges are connected to the current node
+            list<Edge*> localEdges = local->edges;
+            for (auto j = localEdges.begin(); j != localEdges.end(); j++) {
+                Edge* edge = *j;
+                if (edge->beginning_node == current_node->name) {
+                    savedEdges.push_back(edge);
+                }
+            }
+        }
+
+        //Choose the path with the highest edge capacity
+        Edge* max_capacity_edge = nullptr;
+        for (auto i = savedEdges.begin(); i != savedEdges.end(); i++) {
+            Edge* edge = *i;
+
+            //TODO: LATER ADD A CHECK TO MAKE SURE THAT THE LOCAL EDGE HASN'T BEEN SELECTED YET BEFORE PROCESSING THE IF STATEMENT BELOW
+
+            if (max_capacity_edge == nullptr) {
+                max_capacity_edge = edge;
+            }
+            else {
+                if (max_capacity_edge->weight < edge->weight) {
+                    max_capacity_edge = edge;
+                }
+            }
+        }
+
+        //IF NULL THEN NO MORE PATHS FROM THIS NODE AND WE RESTART
+
+        cout << "MAX CAPACITY EDGES DEBUG" << endl;
+        cout << "       { (" << max_capacity_edge->beginning_node << "," << max_capacity_edge->ending_node << ") with a weight of " << max_capacity_edge->weight << "}" << endl;
+
+        //Set current node equal to the next path
+        for (auto i = graph.begin(); i != graph.end(); i++) {
+            Node* local = *i;
+
+            if (local->name == max_capacity_edge->ending_node) {
+                current_node = local;
+                break;
+            }
+        }
+
+        //Add the next node as part of the current path
+        current_path.push_back(current_node->name);
+    }
+    current_path.push_back("Sink");
+
+    cout << "PATH DEBUG" << endl;
+    /*
+    for (auto i = current_path.begin(); i != current_path.end(); i++) {
+        string local = *i;
+        cout << local << " ";
+    }*/
+    
     return 0;
 }
 
@@ -61,11 +148,6 @@ void AddEdge(string node, string ending_node, int weight) {
         Node* value = *i;
 
         if (value->name == node) {
-            list<Edge*> temp = value->edges;
-            temp.push_back(edge);
-            value->edges = temp;
-        }
-        if (value->name == ending_node) {
             list<Edge*> temp = value->edges;
             temp.push_back(edge);
             value->edges = temp;
