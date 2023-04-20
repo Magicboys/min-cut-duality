@@ -84,7 +84,6 @@ int FindMaxFlow() {
 
         //Find the source node in memory
         current_node = source;
-        //current_path.push_back("Source");
     
         while (current_node->name != "Sink") {
             //Find what edges the current node is connected to
@@ -161,7 +160,7 @@ int FindMaxFlow() {
     }
     
     //Calculate max flow from all paths
-    std::cout << "ALL PATHS DEBUG" << endl;
+    std::cout << "Maximal Path(s):" << endl;
     int max_flow = 0;
     for (auto k = choosen_paths.begin(); k != choosen_paths.end(); k++) {
         list<Edge*> localList = *k;
