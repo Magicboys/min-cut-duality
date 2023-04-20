@@ -50,8 +50,6 @@ int main()
     AddEdge("Source", "A", 20);
     AddEdge("Source", "C", 20);
 
-    //PrintGraph();
-
     //Run max flow algorithm
     int max_flow = FindMaxFlow();
     cout << "MAX FLOW: " << max_flow << endl;
